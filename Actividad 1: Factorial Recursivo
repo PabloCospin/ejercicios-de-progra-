@@ -1,0 +1,15 @@
+def factorial(n, indent=0):
+    # Agrega la indentación para visualizar la profundidad
+    indent_str = ' ' * indent
+    print(f'{indent_str}Calculando factorial de {n}...')
+    
+    if n == 1:
+        print(f'{indent_str}Caso base: factorial de 1 es 1.')
+        return 1
+    else:
+        # Llama a la función con una mayor indentación
+        result = n * factorial(n - 1, indent + 4)
+        print(f'{indent_str}Retornando {n} * {result // n} = {result}')
+        return result
+
+print(f'El resultado de 5! es: {factorial(5)}')
