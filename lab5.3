@@ -1,0 +1,140 @@
+import tkinter as tk
+from tkinter import ttk
+
+# Lista global para guardar los objetos creados
+objetos_creados = []
+
+# Clase Persona
+class Persona:
+    def __init__(self, nombre, edad):
+        self.nombre = nombre
+        self._edad = edad  # atributo privado
+
+    def mostrar_info(self):
+        return f"Nombre: {self.nombre}, Edad: {self._edad}"
+
+    def presentarse(self):
+        return f"Hola, soy {self.nombre}."
+
+# Clase Estudiante (hereda de Persona)
+class Estudiante(Persona):
+    def __init__(self, nombre, edad, carrera):
+        super().__init__(nombre, edad)
+        self.carrera = carrera
+
+    def mostrar_info(self):
+        return f"Nombre: {self.nombre}, Edad: {self._edad}, Carrera: {self.carrera}"
+
+    def presentarse(self):
+        return f"Hola, soy {self.nombre} y estudio {self.carrera}."
+
+# Clase Profesor (hereda de Persona)
+class Profesor(Persona):
+    def __init__(self, nombre, edad, materia):
+        super().__init__(nombre, edad)
+        self.materia = materia
+
+    def mostrar_info(self):
+        return f"Nombre: {self.nombre}, Edad: {self._edad}, Materia: {self.materia}"
+
+    def presentarse(self):
+        return f"Hola, soy {self.nombre} y enseño {self.materia}."
+
+# --- Funciones de la interfaz gráfica ---
+def mostrar_campos_adicionales(event=None):
+    """Muestra u oculta los campos de entrada según el tipo seleccionado."""
+    tipo = combo_tipo.get()
+    
+    if tipo == "Estudiante":
+        label_carrera.pack()
+        entry_carrera.pack()
+        label_materia.pack_forget()
+        entry_materia.pack_forget()
+    elif tipo == "Profesor":
+        label_materia.pack()
+        entry_materia.pack()
+        label_carrera.pack_forget()
+        entry_carrera.pack_forget()
+    else:
+        label_carrera.pack_forget()
+        entry_carrera.pack_forget()
+        label_materia.pack_forget()
+        entry_materia.pack_forget()
+
+def crear_objeto():
+    """Crea el objeto según el tipo seleccionado y lo guarda en la lista."""
+    nombre = entry_nombre.get()
+    edad = entry_edad.get()
+    tipo = combo_tipo.get()
+    
+    if tipo == "Persona":
+        objeto = Persona(nombre, edad)
+    elif tipo == "Estudiante":
+        carrera = entry_carrera.get()
+        objeto = Estudiante(nombre, edad, carrera)
+    elif tipo == "Profesor":
+        materia = entry_materia.get()
+        objeto = Profesor(nombre, edad, materia)
+    else:
+        label_resultado.config(text="Por favor, selecciona un tipo de objeto válido.")
+        return
+        
+    objetos_creados.append(objeto)
+    label_resultado.config(text=objeto.mostrar_info() + "\n" + objeto.presentarse())
+
+def mostrar_lista():
+    """Muestra la información de todos los objetos en la lista."""
+    if not objetos_creados:
+        label_resultado.config(text="La lista de objetos está vacía.")
+        return
+        
+    texto_lista = "Objetos en la lista:\n"
+    for obj in objetos_creados:
+        texto_lista += "- " + obj.mostrar_info() + "\n"
+        
+    label_resultado.config(text=texto_lista)
+
+def limpiar_pantalla():
+    """Limpia los campos de entrada y el resultado."""
+    entry_nombre.delete(0, tk.END)
+    entry_edad.delete(0, tk.END)
+    entry_carrera.delete(0, tk.END)
+    entry_materia.delete(0, tk.END)
+    label_resultado.config(text="")
+
+# --- Interfaz con Tkinter ---
+root = tk.Tk()
+root.title("Laboratorio PCC")
+
+tk.Label(root, text="Nombre:").pack()
+entry_nombre = tk.Entry(root)
+entry_nombre.pack()
+
+tk.Label(root, text="Edad:").pack()
+entry_edad = tk.Entry(root)
+entry_edad.pack()
+
+# Combobox para seleccionar el tipo
+tk.Label(root, text="Tipo de Objeto:").pack()
+combo_tipo = ttk.Combobox(root, values=["Persona", "Estudiante", "Profesor"])
+combo_tipo.pack()
+combo_tipo.set("Persona")
+combo_tipo.bind("<<ComboboxSelected>>", mostrar_campos_adicionales)
+
+# Campos de entrada adicionales (inicialmente ocultos)
+label_carrera = tk.Label(root, text="Carrera:")
+entry_carrera = tk.Entry(root)
+
+label_materia = tk.Label(root, text="Materia:")
+entry_materia = tk.Entry(root)
+
+# Botones de acción
+tk.Button(root, text="Crear Objeto", command=crear_objeto).pack(pady=5)
+tk.Button(root, text="Mostrar Lista", command=mostrar_lista).pack(pady=5)
+tk.Button(root, text="Limpiar Pantalla", command=limpiar_pantalla).pack(pady=5)
+
+# Se cambia el color del texto a verde
+label_resultado = tk.Label(root, text="", fg="green")
+label_resultado.pack()
+
+root.mainloop()
